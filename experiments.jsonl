@@ -16,3 +16,4 @@
 {"exp": 16, "hypothesis": "Capacity attempts are compute-bound; halving TOTAL_BATCH_SIZE doubles step count without changing model size.", "val_bpb": 3.7106, "result": "REGRESSED", "changes": "TOTAL_BATCH_SIZE 2**14 -> 2**13"}
 {"exp": 17, "hypothesis": "Bigger DEVICE_BATCH improves GPU throughput while keeping gradient quality at TOTAL_BATCH; should give more steps for free.", "val_bpb": 3.5807, "result": "REGRESSED", "changes": "DEVICE_BATCH_SIZE 16 -> 32"}
 {"exp": 18, "hypothesis": "Dropout has improved at every reduction; with abundant data, 0 may be optimal.", "val_bpb": 4.7281, "result": "REGRESSED", "changes": "DROPOUT 0.05 -> 0.0"}
+{"exp": 19, "hypothesis": "LR 1e-3 -> 1.5e-3 to push LR ceiling further; exp-014 showed train still descending.", "val_bpb": 3.8130, "result": "REGRESSED", "changes": "LEARNING_RATE 1e-3 -> 1.5e-3"}
