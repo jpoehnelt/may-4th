@@ -13,3 +13,4 @@
 {"exp": 13, "hypothesis": "Train loss still 2.6 with significant fit headroom; reducing dropout further should let the model fit more.", "val_bpb": 3.7627, "result": "IMPROVED", "changes": "DROPOUT 0.1 -> 0.05"}
 {"exp": 14, "hypothesis": "Train still descending; higher peak LR (6e-4 -> 1e-3) should converge further within budget.", "val_bpb": 3.5184, "result": "IMPROVED", "changes": "LEARNING_RATE 6e-4 -> 1e-3"}
 {"exp": 15, "hypothesis": "With LR=1e-3 and lower dropout, wider d_model=192 may now converge in budget.", "val_bpb": 4.0191, "result": "REGRESSED", "changes": "D_MODEL 128 -> 192, N_HEADS 4 -> 6"}
+{"exp": 16, "hypothesis": "Capacity attempts are compute-bound; halving TOTAL_BATCH_SIZE doubles step count without changing model size.", "val_bpb": 3.7106, "result": "REGRESSED", "changes": "TOTAL_BATCH_SIZE 2**14 -> 2**13"}
