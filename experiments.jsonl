@@ -2,3 +2,4 @@
 {"exp": 2, "hypothesis": "Severe train/val gap (1.25 nats vs 6.79 bpb) suggests overfitting; raising dropout should regularize.", "val_bpb": 6.7546, "result": "IMPROVED", "changes": "DROPOUT 0.1 -> 0.3"}
 {"exp": 3, "hypothesis": "Model has more parameters than tokens; shrinking d_model and heads reduces capacity and should beat just adding dropout.", "val_bpb": 6.6995, "result": "IMPROVED", "changes": "D_MODEL 192->128, N_HEADS 6->4"}
 {"exp": 4, "hypothesis": "More weight decay should regularize further. Risk acknowledged.", "val_bpb": 6.7441, "result": "REGRESSED", "changes": "WEIGHT_DECAY 0.1 -> 0.5"}
+{"exp": 5, "hypothesis": "Existing dropout only acts inside attention; adding residual+embedding dropout regularizes the rest of the stack and should beat any single-knob tweak.", "val_bpb": 6.2199, "result": "IMPROVED", "changes": "added nn.Dropout after attn residual, after FFN residual, and on token+pos embedding"}

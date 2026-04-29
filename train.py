@@ -91,10 +91,11 @@ class Block(nn.Module):
         self.attn = CausalSelfAttention(d_model, n_heads, dropout)
         self.ln2 = RMSNorm(d_model)
         self.ffn = FFN(d_model, d_ff_mult)
+        self.resid_drop = nn.Dropout(dropout)
 
     def forward(self, x):
-        x = x + self.attn(self.ln1(x))
-        x = x + self.ffn(self.ln2(x))
+        x = x + self.resid_drop(self.attn(self.ln1(x)))
+        x = x + self.resid_drop(self.ffn(self.ln2(x)))
         return x
 
 
@@ -105,6 +106,7 @@ class GPT(nn.Module):
         super().__init__()
         self.tok_emb = nn.Embedding(vocab_size, d_model)
         self.pos_emb = nn.Embedding(seq_len, d_model)
+        self.emb_drop = nn.Dropout(dropout)
         self.blocks = nn.ModuleList([
             Block(d_model, n_heads, d_ff_mult, dropout) for _ in range(depth)
         ])
@@ -125,7 +127,7 @@ class GPT(nn.Module):
     def forward(self, x):
         B, T = x.shape
         pos = torch.arange(T, device=x.device).unsqueeze(0)
-        x = self.tok_emb(x) + self.pos_emb(pos)
+        x = self.emb_drop(self.tok_emb(x) + self.pos_emb(pos))
         for block in self.blocks:
             x = block(x)
         x = self.ln_f(x)
