@@ -19,3 +19,4 @@
 {"exp": 19, "hypothesis": "LR 1e-3 -> 1.5e-3 to push LR ceiling further; exp-014 showed train still descending.", "val_bpb": 3.8130, "result": "REGRESSED", "changes": "LEARNING_RATE 1e-3 -> 1.5e-3"}
 {"exp": 20, "hypothesis": "Dropout=0.05 already provides regularization and data is abundant; lower WEIGHT_DECAY should let weights fit more without overfitting.", "val_bpb": 3.4955, "result": "IMPROVED", "changes": "WEIGHT_DECAY 0.1 -> 0.05"}
 {"exp": 21, "hypothesis": "Continue WD reduction direction; if 0.05 helped, 0.02 may help more.", "val_bpb": 3.8409, "result": "REGRESSED", "changes": "WEIGHT_DECAY 0.05 -> 0.02"}
+{"exp": "REGIME_CHANGE", "note": "TRAIN_BUDGET_SEC 300 -> 1800 (30 min). Prior results not directly comparable; warm-starting from exp-020 best (WD=0.05, LR=1e-3, dropout=0.05, D_MODEL=128, DEPTH=4, val_bpb=3.4955 at 300s)."}
