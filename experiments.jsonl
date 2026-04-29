@@ -6,3 +6,4 @@
 {"exp": 6, "hypothesis": "DROPOUT=0.3 was tuned when only attention had dropout; now that it applies at 3 sites, total regularization is too strong.", "val_bpb": 6.1732, "result": "IMPROVED", "changes": "DROPOUT 0.3 -> 0.2"}
 {"exp": 7, "hypothesis": "Strong regularization should let us add depth (4 -> 6).", "val_bpb": 6.5905, "result": "REGRESSED", "changes": "DEPTH 4 -> 6"}
 {"exp": 8, "hypothesis": "Training was still descending at the end of the budget; higher peak LR (3e-4 -> 6e-4) should converge further inside 300s now that strong regularization is in place.", "val_bpb": 6.0065, "result": "IMPROVED", "changes": "LEARNING_RATE 3e-4 -> 6e-4"}
+{"exp": 9, "hypothesis": "With residual dropout and higher LR in place, the wider d_model=192 may now be trainable.", "val_bpb": 6.3228, "result": "REGRESSED", "changes": "D_MODEL 128 -> 192, N_HEADS 4 -> 6"}
