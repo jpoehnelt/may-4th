@@ -1,2 +1,3 @@
 {"exp": 1, "hypothesis": "baseline run with starting hyperparameters to establish the bar.", "val_bpb": 6.7882, "result": "IMPROVED", "changes": "baseline: depth=4, d_model=192, n_heads=6, dropout=0.1, lr=3e-4, wd=0.1"}
 {"exp": 2, "hypothesis": "Severe train/val gap (1.25 nats vs 6.79 bpb) suggests overfitting; raising dropout should regularize.", "val_bpb": 6.7546, "result": "IMPROVED", "changes": "DROPOUT 0.1 -> 0.3"}
+{"exp": 3, "hypothesis": "Model has more parameters than tokens; shrinking d_model and heads reduces capacity and should beat just adding dropout.", "val_bpb": 6.6995, "result": "IMPROVED", "changes": "D_MODEL 192->128, N_HEADS 6->4"}

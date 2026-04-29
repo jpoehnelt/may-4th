@@ -19,8 +19,8 @@ from prepare import (
 
 # ---- Hyperparameters (agent tunes these) ----
 DEPTH = 4                    # Number of transformer blocks
-D_MODEL = 192                # Model dimension
-N_HEADS = 6                  # Number of attention heads
+D_MODEL = 128                # Model dimension
+N_HEADS = 4                  # Number of attention heads
 D_FF_MULT = 4                # FFN expansion factor
 DROPOUT = 0.3                # Dropout rate
 LEARNING_RATE = 3e-4         # Peak learning rate
