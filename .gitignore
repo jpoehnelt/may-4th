@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+checkpoints/
+data/train.bin
+data/val.bin
+data/tokenizer.json

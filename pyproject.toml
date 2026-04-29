@@ -1,0 +1,11 @@
+[project]
+name = "may-4th"
+version = "0.1.0"
+description = "Autonomous ML research demo — Yoda OSV language model"
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.3",
+    "numpy>=1.26",
+    "rich>=13.0",
+]
+
