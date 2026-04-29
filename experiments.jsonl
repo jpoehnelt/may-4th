@@ -11,3 +11,4 @@
 {"exp": 11, "hypothesis": "Dataset 3.7x larger (53K -> 198K tokens). Dropout=0.2 was tuned for repetitive overfitting; with diverse data, lowering DROPOUT to 0.1 should let the model fit more without overfitting.", "val_bpb": 4.1787, "result": "IMPROVED", "changes": "DROPOUT 0.2 -> 0.1 (combined with 3.7x dataset expansion)"}
 {"exp": 12, "hypothesis": "More data per step may now justify deeper model that exp-007 couldn't afford.", "val_bpb": 4.7146, "result": "REGRESSED", "changes": "DEPTH 4 -> 6"}
 {"exp": 13, "hypothesis": "Train loss still 2.6 with significant fit headroom; reducing dropout further should let the model fit more.", "val_bpb": 3.7627, "result": "IMPROVED", "changes": "DROPOUT 0.1 -> 0.05"}
+{"exp": 14, "hypothesis": "Train still descending; higher peak LR (6e-4 -> 1e-3) should converge further within budget.", "val_bpb": 3.5184, "result": "IMPROVED", "changes": "LEARNING_RATE 6e-4 -> 1e-3"}
