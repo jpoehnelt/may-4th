@@ -9,3 +9,4 @@
 {"exp": 9, "hypothesis": "With residual dropout and higher LR in place, the wider d_model=192 may now be trainable.", "val_bpb": 6.3228, "result": "REGRESSED", "changes": "D_MODEL 128 -> 192, N_HEADS 4 -> 6"}
 {"exp": 10, "hypothesis": "Higher LR=6e-4 may benefit from longer warmup. Bump WARMUP_STEPS 100 -> 200.", "val_bpb": 6.0866, "result": "REGRESSED", "changes": "WARMUP_STEPS 100 -> 200"}
 {"exp": 11, "hypothesis": "Dataset 3.7x larger (53K -> 198K tokens). Dropout=0.2 was tuned for repetitive overfitting; with diverse data, lowering DROPOUT to 0.1 should let the model fit more without overfitting.", "val_bpb": 4.1787, "result": "IMPROVED", "changes": "DROPOUT 0.2 -> 0.1 (combined with 3.7x dataset expansion)"}
+{"exp": 12, "hypothesis": "More data per step may now justify deeper model that exp-007 couldn't afford.", "val_bpb": 4.7146, "result": "REGRESSED", "changes": "DEPTH 4 -> 6"}
