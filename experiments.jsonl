@@ -5,3 +5,4 @@
 {"exp": 5, "hypothesis": "Existing dropout only acts inside attention; adding residual+embedding dropout regularizes the rest of the stack and should beat any single-knob tweak.", "val_bpb": 6.2199, "result": "IMPROVED", "changes": "added nn.Dropout after attn residual, after FFN residual, and on token+pos embedding"}
 {"exp": 6, "hypothesis": "DROPOUT=0.3 was tuned when only attention had dropout; now that it applies at 3 sites, total regularization is too strong.", "val_bpb": 6.1732, "result": "IMPROVED", "changes": "DROPOUT 0.3 -> 0.2"}
 {"exp": 7, "hypothesis": "Strong regularization should let us add depth (4 -> 6).", "val_bpb": 6.5905, "result": "REGRESSED", "changes": "DEPTH 4 -> 6"}
+{"exp": 8, "hypothesis": "Training was still descending at the end of the budget; higher peak LR (3e-4 -> 6e-4) should converge further inside 300s now that strong regularization is in place.", "val_bpb": 6.0065, "result": "IMPROVED", "changes": "LEARNING_RATE 3e-4 -> 6e-4"}
