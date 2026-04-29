@@ -1,0 +1,1 @@
+{"exp": 1, "hypothesis": "baseline run with starting hyperparameters to establish the bar.", "val_bpb": 6.7882, "result": "IMPROVED", "changes": "baseline: depth=4, d_model=192, n_heads=6, dropout=0.1, lr=3e-4, wd=0.1"}
