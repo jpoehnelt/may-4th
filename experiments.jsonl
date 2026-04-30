@@ -21,3 +21,4 @@
 {"exp": 21, "hypothesis": "Continue WD reduction direction; if 0.05 helped, 0.02 may help more.", "val_bpb": 3.8409, "result": "REGRESSED", "changes": "WEIGHT_DECAY 0.05 -> 0.02"}
 {"exp": "REGIME_CHANGE", "note": "TRAIN_BUDGET_SEC 300 -> 1800 (30 min). Prior results not directly comparable; warm-starting from exp-020 best (WD=0.05, LR=1e-3, dropout=0.05, D_MODEL=128, DEPTH=4, val_bpb=3.4955 at 300s)."}
 {"exp": 22, "hypothesis": "Re-baseline current best at 1800s budget to disentangle compute from config.", "val_bpb": 6.3638, "result": "REGRESSED", "changes": "no config change, budget 300s -> 1800s. Train loss collapsed to 0.12 (memorization)."}
+{"exp": 23, "hypothesis": "1800s budget gave 6x more steps to memorize; restore strong regularization with DROPOUT 0.2.", "val_bpb": 3.4927, "result": "IMPROVED", "changes": "DROPOUT 0.05 -> 0.2 (paired with 1800s budget)"}
