@@ -18,11 +18,11 @@ from prepare import (
 )
 
 # ---- Hyperparameters (agent tunes these) ----
-DEPTH = 5                    # Number of transformer blocks
+DEPTH = 6                    # Number of transformer blocks
 D_MODEL = 128                # Model dimension
 N_HEADS = 4                  # Number of attention heads
 D_FF_MULT = 4                # FFN expansion factor
-DROPOUT = 0.4                # Dropout rate
+DROPOUT = 0.2                # Dropout rate
 LEARNING_RATE = 1e-3         # Peak learning rate
 WEIGHT_DECAY = 0.05          # AdamW weight decay
 WARMUP_STEPS = 100           # LR warmup steps
