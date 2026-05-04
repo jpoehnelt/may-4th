@@ -28,7 +28,7 @@ from prepare import (
 
 # ---- Hyperparameters ----
 DEPTH_ENC = 2
-DEPTH_DEC = 3
+DEPTH_DEC = 4
 D_MODEL = 96
 N_HEADS = 4
 D_FF_MULT = 2
