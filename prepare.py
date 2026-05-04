@@ -274,16 +274,11 @@ def save_checkpoint(model, optimizer=None, step=0, val_bpb=0.0, path=None):
         path = os.path.join(CHECKPOINT_DIR, "best.pt")
         # Check if we are actually improving
         if os.path.exists(path):
-            try:
-                # Weights only = False is needed if custom modules are present, but for a dict it's fine.
-                # Actually, standard is True for safety, but earlier load used False. Let's use True for dicts.
-                old_state = torch.load(path, map_location="cpu", weights_only=True)
-                best_val = old_state.get("val_bpb", float("inf"))
-                if val_bpb >= best_val:
-                    print(f"Not saving checkpoint. val_bpb ({val_bpb:.4f}) >= best ({best_val:.4f})")
-                    return
-            except Exception:
-                pass
+            old_state = torch.load(path, map_location="cpu", weights_only=False)
+            best_val = old_state.get("val_bpb", float("inf"))
+            if val_bpb >= best_val:
+                print(f"Not saving checkpoint. val_bpb ({val_bpb:.4f}) >= best ({best_val:.4f})")
+                return
 
     state = {
         "model": model.state_dict(),
