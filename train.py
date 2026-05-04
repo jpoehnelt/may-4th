@@ -30,7 +30,7 @@ from prepare import (
 DEPTH_ENC = 2
 DEPTH_DEC = 3
 D_MODEL = 96
-N_HEADS = 2
+N_HEADS = 4
 D_FF_MULT = 2
 DROPOUT = 0.2
 LABEL_SMOOTHING = 0.0
