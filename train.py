@@ -27,11 +27,11 @@ from prepare import (
 )
 
 # ---- Hyperparameters ----
-DEPTH_ENC = 4
-DEPTH_DEC = 4
-D_MODEL = 128
-N_HEADS = 4
-D_FF_MULT = 4
+DEPTH_ENC = 2
+DEPTH_DEC = 3
+D_MODEL = 64
+N_HEADS = 2
+D_FF_MULT = 2
 DROPOUT = 0.2
 LABEL_SMOOTHING = 0.0
 LEARNING_RATE = 7e-4
@@ -400,6 +400,17 @@ def train():
     print(f"{'=' * 60}")
 
     save_checkpoint(model, optimizer, step, val_bpb)
+
+    print(f"\n{'=' * 60}")
+    print("Exporting model to ONNX...")
+    try:
+        from export_onnx import export as export_onnx_model
+        export_onnx_model()
+        print("ONNX export complete.")
+    except Exception as e:
+        print(f"ONNX export failed: {e}")
+    print(f"{'=' * 60}\n")
+
     return val_bpb
 
 
