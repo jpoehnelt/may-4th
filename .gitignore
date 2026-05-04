@@ -1,6 +1,29 @@
+# Python
 __pycache__/
 *.pyc
+
+# Training artifacts
 checkpoints/
+yoda-adapter/
 data/train.bin
 data/val.bin
 data/tokenizer.json
+
+# Python tooling
+.venv/
+uv.lock
+
+# Claude Code local state
+.claude/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Web (Astro) build artifacts and deps
+web/node_modules/
+web/.astro/
+web/dist/
+

@@ -1,0 +1,211 @@
+/* === Global Styles — Kaminoan Yoda Translator === */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Color tokens */
+  --bg-primary: #0a0e17;
+  --bg-secondary: #0f1724;
+  --bg-card: rgba(15, 23, 42, 0.6);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-dim: #475569;
+  --accent-green: #4ade80;
+  --accent-green-dim: rgba(74, 222, 128, 0.15);
+  --accent-blue: #3b82f6;
+  --border: rgba(255, 255, 255, 0.06);
+  --glow-green: rgba(74, 222, 128, 0.08);
+}
+
+html {
+  font-size: 110%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Star field background */
+body::before, body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg-primary); /* Base color moved here */
+}
+
+/* Deep space stars (slow) */
+body::before {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74, 222, 128, 0.06), transparent), /* Ambient glow */
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(59, 130, 246, 0.04), transparent), /* Ambient glow */
+    radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 75px 85px, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 125px 15px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 175px 115px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 225px 65px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 275px 145px, rgba(255, 255, 255, 0.3), transparent);
+  background-size: 100% 100%, 100% 100%, 300px 300px, 300px 300px, 300px 300px, 300px 300px, 300px 300px, 300px 300px;
+  background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat, repeat, repeat;
+  animation: drift-bg-slow 90s linear infinite;
+  opacity: 1; /* Was 0.6, but now it has the base color */
+}
+
+/* Mid space stars (fast) */
+body::after {
+  background-image:
+    radial-gradient(1.5px 1.5px at 50px 100px, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(1.5px 1.5px at 150px 250px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(2px 2px at 250px 50px, rgba(74, 222, 128, 0.6), transparent), /* Jedi Green */
+    radial-gradient(1.5px 1.5px at 350px 350px, rgba(59, 130, 246, 0.6), transparent), /* Lightsaber Blue */
+    radial-gradient(2px 2px at 450px 150px, rgba(255, 255, 255, 0.8), transparent);
+  background-size: 500px 500px;
+  background-repeat: repeat;
+  animation: drift-bg 50s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes drift-bg-slow {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 0 0, 0 0, -3000px 1500px, -3000px 1500px, -3000px 1500px, -3000px 1500px, -3000px 1500px, -3000px 1500px; }
+}
+
+@keyframes drift-bg {
+  0% { background-position: 0 0; }
+  100% { background-position: -3000px 1500px; }
+}
+
+a {
+  color: var(--accent-green);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Page layout */
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  gap: 2.5rem;
+  min-height: 100dvh;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--accent-green-dim);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  border-radius: 100px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent-green);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+  margin-bottom: 0.5rem;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  color: #cbd5e1;
+  font-weight: 500;
+  max-width: 650px;
+  line-height: 1.6;
+}
+
+.hero-subtitle em {
+  color: #4ade80;
+  font-style: normal;
+  font-weight: 600;
+  background: rgba(74, 222, 128, 0.08);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* Translator card */
+.translator-card {
+  width: 100%;
+  max-width: 700px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.3),
+    0 0 80px var(--glow-green);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer a {
+  color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .page {
+    padding: 1.5rem 1rem;
+    justify-content: flex-start;
+    padding-top: 3rem;
+  }
+
+  .translator-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+}

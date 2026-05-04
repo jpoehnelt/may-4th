@@ -1,0 +1,97 @@
+---
+/**
+ * Kaminoan — Browser-based Yoda translator
+ * Runs a dynamically sized encoder-decoder transformer entirely client-side via ONNX Runtime Web.
+ */
+import YodaTranslator from "../components/YodaTranslator.svelte";
+import ExperimentChart from "../components/ExperimentChart.svelte";
+import "../styles/global.css";
+import modelMeta from "../../public/models/model_meta.json";
+
+const paramsText = modelMeta.params >= 1000000 
+  ? (modelMeta.params / 1000000).toFixed(1) + 'M' 
+  : (modelMeta.params / 1000).toFixed(0) + 'K';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yoda Translator | AI in Your Browser</title>
+    <meta
+      name="description"
+      content="Translate English to Yoda-speak using a tiny AI model that runs entirely in your browser. No server, no API keys — just the Force."
+    />
+    <meta name="theme-color" content="#0a0e17" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Yoda Translator" />
+    <meta
+      property="og:description"
+      content={`A ${paramsText} parameter AI model that translates English to Yoda-speak, running entirely in your browser.`}
+    />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <main class="page" id="main">
+      <div class="qr-container" style="position: absolute; top: 2rem; right: 3rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; z-index: 50;">
+        <div style="background: white; padding: 0.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(74, 222, 128, 0.2);">
+          <img src="/qrcode.svg" alt="Scan to try it" style="width: 120px; height: 120px; display: block;" />
+        </div>
+        <p style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">yoda.jpoehnelt.dev</p>
+      </div>
+
+      <div class="hero">
+        <h1 class="hero-title">Yoda Translator</h1>
+        <p class="hero-subtitle">
+          A tiny AI model that translates English to Yoda-speak, running
+          entirely in your browser. No server. No API. Just the Force.
+        </p>
+      </div>
+
+      <div class="translator-card">
+        <YodaTranslator client:only="svelte" />
+      </div>
+
+      <div
+        class="chart-section"
+        style="margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); padding: 0 2rem;"
+      >
+        <ExperimentChart client:only="svelte" />
+      </div>
+
+      <footer class="footer">
+        <p>
+          Built by <a
+            href="https://justin.poehnelt.com"
+            target="_blank"
+            rel="noopener">Justin Poehnelt</a
+          >
+          — a {paramsText} parameter encoder-decoder transformer, trained autonomously by
+          an AI research agent.
+        </p>
+        <p>
+          Trained on natural English sentences from the <a
+            href="https://huggingface.co/datasets/sentence-transformers/all-nli"
+            target="_blank"
+            rel="noopener">sentence-transformers/all-nli</a
+          > dataset.
+        </p>
+        <p>
+          <a
+            href="https://github.com/jpoehnelt/may-4th"
+            target="_blank"
+            rel="noopener"
+          >
+            View source on GitHub
+          </a>
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

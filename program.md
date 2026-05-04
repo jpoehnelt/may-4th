@@ -25,7 +25,6 @@ Apply your proposed change. You may ONLY modify `train.py`. Never touch `prepare
 Constraints:
 
 - `D_MODEL` must be divisible by `N_HEADS`
-- Keep the same interface: `GPT` class with `param_count()`, `train()` function
 - Maintain imports from `prepare.py`
 
 ### 4. Train
@@ -84,6 +83,6 @@ If val_bpb has plateaued for 3+ experiments, expand the dataset: `data/yoda_osv.
 ## Constraints
 
 - Hardware: Apple Silicon (MPS backend), limited memory
-- Dataset: ~3,000 pairs (~53K tokens)
+- Dataset: ~8,000 pairs
 - Overfitting is the primary risk (more params than tokens)
 - Metric: `val_bpb` (lower = better)
