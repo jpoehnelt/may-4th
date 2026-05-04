@@ -22,12 +22,9 @@ import numpy as np
 
 from prepare import (
     VOCAB_SIZE, MAX_SEQ_LEN, TRAIN_BUDGET_SEC, DEVICE, DATA_PATH,
+    PAD_ID, BOS_ID, EOS_ID,
     get_tokenizer, save_checkpoint,
 )
-
-# ---- Special tokens ----
-PAD_ID = 0   # also used as BOS for decoder
-EOS_ID = None  # set after tokenizer load (id of '\n')
 
 # ---- Hyperparameters ----
 DEPTH_ENC = 4
@@ -234,17 +231,17 @@ def load_pairs():
     return pairs
 
 
-def tokenize_pairs(pairs, tokenizer, eos_id):
+def tokenize_pairs(pairs, tokenizer):
     """Tokenize each pair. Returns list of (src_ids, tgt_ids) where:
-    src_ids = en_tokens + [eos]
-    tgt_ids = [bos] + yoda_tokens + [eos]   (bos = PAD_ID = 0, used as decoder start)
+    src_ids = en_tokens + [EOS]
+    tgt_ids = [BOS] + yoda_tokens + [EOS]
     """
     out = []
     for en, yoda in pairs:
-        s = tokenizer.encode(en) + [eos_id]
-        t = [PAD_ID] + tokenizer.encode(yoda) + [eos_id]
+        s = tokenizer.encode(en) + [EOS_ID]
+        t = [BOS_ID] + tokenizer.encode(yoda) + [EOS_ID]
         if len(s) > MAX_SRC_LEN or len(t) > MAX_TGT_LEN:
-            continue  # skip overlong pairs
+            continue
         out.append((s, t))
     return out
 
@@ -318,16 +315,11 @@ def train():
     print("=" * 60)
 
     tokenizer = get_tokenizer()
-    eos_ids = tokenizer.encode("\n")
-    eos_id = eos_ids[-1] if eos_ids else 10  # fallback to ascii LF
-    global EOS_ID
-    EOS_ID = eos_id
-    print(f"EOS token id: {eos_id}")
+    print(f"Special tokens: PAD={PAD_ID} BOS={BOS_ID} EOS={EOS_ID}  vocab={VOCAB_SIZE}")
 
-    # Load + tokenize all pairs
     raw_pairs = load_pairs()
     print(f"Raw pairs: {len(raw_pairs)}")
-    pairs = tokenize_pairs(raw_pairs, tokenizer, eos_id)
+    pairs = tokenize_pairs(raw_pairs, tokenizer)
     print(f"Pairs after length filter: {len(pairs)} (dropped {len(raw_pairs) - len(pairs)})")
 
     random.seed(42)
@@ -336,13 +328,9 @@ def train():
     val_pairs = pairs[:n_val]
     train_pairs = pairs[n_val:]
 
-    # Sum of target byte length for bpb normalisation
-    val_raw = raw_pairs[:n_val]  # WRONG — pairs were shuffled. Use raw pairs aligned.
-    # Recompute: we need val byte counts aligned with val_pairs. Easiest: derive byte count from token bytes.
-    # We'll measure bytes by tokenizer.decode of target tokens (excluding BOS/EOS).
+    # Sum of target byte length for bpb normalisation (decode tgt body, sans BOS/EOS)
     val_text_bytes = 0
     for s, t in val_pairs:
-        # t = [BOS, ...tgt..., EOS]; bytes of decoded tgt
         body = t[1:-1] if len(t) >= 2 else t
         decoded = tokenizer.decode(body)
         val_text_bytes += len(decoded.encode("utf-8"))

@@ -23,7 +23,7 @@ from rich.layout import Layout
 from rich.columns import Columns
 from rich import box
 
-from prepare import get_tokenizer, DEVICE, MAX_SEQ_LEN
+from prepare import get_tokenizer, DEVICE, MAX_SEQ_LEN, PAD_ID, BOS_ID, EOS_ID
 
 # Lazy-import model from train.py
 import importlib.util
@@ -65,13 +65,10 @@ def generate_tokens(model, tokenizer, src_text, max_tokens=80, temperature=0.0, 
     temperature=0 enables greedy decoding (recommended for translation).
     copy_bias adds a logit bonus to tokens present in the source (encourages copying).
     """
-    eos_ids = tokenizer.encode("\n")
-    eos_id = eos_ids[-1] if eos_ids else 10
-
-    src_ids = tokenizer.encode(src_text) + [eos_id]
+    src_ids = tokenizer.encode(src_text) + [EOS_ID]
     src_ids = src_ids[:64]  # MAX_SRC_LEN
     src = torch.tensor([src_ids], dtype=torch.long, device=DEVICE)
-    src_pad_mask = (src == 0)
+    src_pad_mask = (src == PAD_ID)
 
     enc_out = model.encode(src, src_pad_mask)
 
@@ -79,8 +76,7 @@ def generate_tokens(model, tokenizer, src_text, max_tokens=80, temperature=0.0, 
     if copy_bias > 0:
         bias_tokens = torch.unique(src).long()
 
-    # Start decoder from BOS = PAD = 0
-    tgt = torch.tensor([[0]], dtype=torch.long, device=DEVICE)
+    tgt = torch.tensor([[BOS_ID]], dtype=torch.long, device=DEVICE)
 
     start = time.time()
     for i in range(max_tokens):
@@ -101,7 +97,7 @@ def generate_tokens(model, tokenizer, src_text, max_tokens=80, temperature=0.0, 
             next_id = torch.multinomial(probs, num_samples=1)
 
         token_id = int(next_id.item())
-        if token_id == eos_id:
+        if token_id == EOS_ID:
             break
 
         token_str = tokenizer.decode([token_id])

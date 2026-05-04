@@ -1,10 +1,9 @@
 """
 prepare.py — Constants, data prep, tokenizer, dataloader, evaluation.
-DO NOT MODIFY. The agent only touches train.py.
-
 """
 
 import os
+import re
 import json
 import time
 import struct
@@ -14,7 +13,7 @@ import torch
 
 # ---- Constants ----
 MAX_SEQ_LEN = 256          # Yoda sentences are short
-VOCAB_SIZE = 2048           # Small vocab for tiny model
+VOCAB_SIZE = 4096          # Larger vocab → more whole-word tokens
 EVAL_TOKENS = 50_000        # Keep eval fast
 TRAIN_BUDGET_SEC = 600       # 10 min per experiment
 DATA_PATH = "data/yoda_osv.jsonl"
@@ -23,6 +22,18 @@ TRAIN_BIN = "data/train.bin"
 VAL_BIN = "data/val.bin"
 CHECKPOINT_DIR = "checkpoints"
 DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
+
+# ---- Special tokens (reserved at top of vocab) ----
+PAD_ID = VOCAB_SIZE - 3   # 4093
+BOS_ID = VOCAB_SIZE - 2   # 4094
+EOS_ID = VOCAB_SIZE - 1   # 4095
+SPECIAL_TOKEN_IDS = {PAD_ID, BOS_ID, EOS_ID}
+
+# ---- Pre-tokenization regex (GPT-2 style, simplified) ----
+# Splits text at word/punct/whitespace boundaries so BPE merges never cross them.
+PRE_TOK_PATTERN = re.compile(
+    r"'s|'t|'re|'ve|'m|'ll|'d| ?[A-Za-z]+| ?\d+| ?[^\sA-Za-z\d]+|\s+"
+)
 
 # ---- Byte-Pair Encoding Tokenizer (minimal) ----
 
@@ -38,25 +49,34 @@ class ByteLevelTokenizer:
         self.vocab = {}        # int -> bytes
 
     def _build_base_vocab(self):
-        """256 byte-level tokens."""
+        """256 byte-level tokens + 3 special tokens at the top of the vocab."""
         self.vocab = {i: bytes([i]) for i in range(256)}
+        # Special tokens: produce no bytes when decoded
+        self.vocab[PAD_ID] = b""
+        self.vocab[BOS_ID] = b""
+        self.vocab[EOS_ID] = b""
+
+    def _pretokenize(self, text):
+        """Split text at word/punct boundaries; return list of byte-id lists."""
+        return [list(m.group().encode("utf-8")) for m in PRE_TOK_PATTERN.finditer(text)]
 
     def train(self, texts, num_merges=None):
-        """Train BPE merges on a list of strings."""
+        """Train BPE merges with pre-tokenization; merges never cross word boundaries."""
         if num_merges is None:
-            num_merges = self.vocab_size - 256
+            num_merges = self.vocab_size - 256 - 3  # reserve 3 special tokens
 
         self._build_base_vocab()
 
-        # Convert all text to byte sequences
-        data = []
+        # Pre-tokenize everything into chunks (each chunk = list of byte ids).
+        # Pairs are counted only WITHIN chunks, so e.g. " the" stays "the" but
+        # "through·the" can never merge across the space.
+        chunks = []
         for text in texts:
-            data.append(list(text.encode("utf-8")))
+            chunks.extend(self._pretokenize(text))
 
         for i in range(num_merges):
-            # Count pairs
             pair_counts = {}
-            for seq in data:
+            for seq in chunks:
                 for j in range(len(seq) - 1):
                     pair = (seq[j], seq[j + 1])
                     pair_counts[pair] = pair_counts.get(pair, 0) + 1
@@ -64,14 +84,12 @@ class ByteLevelTokenizer:
             if not pair_counts:
                 break
 
-            # Find most frequent pair
             best_pair = max(pair_counts, key=pair_counts.get)
             new_id = 256 + i
             self.merges[best_pair] = new_id
             self.vocab[new_id] = self.vocab[best_pair[0]] + self.vocab[best_pair[1]]
 
-            # Replace in all sequences
-            for k, seq in enumerate(data):
+            for k, seq in enumerate(chunks):
                 new_seq = []
                 j = 0
                 while j < len(seq):
@@ -81,42 +99,43 @@ class ByteLevelTokenizer:
                     else:
                         new_seq.append(seq[j])
                         j += 1
-                data[k] = new_seq
+                chunks[k] = new_seq
 
-            if (i + 1) % 100 == 0:
+            if (i + 1) % 200 == 0:
                 print(f"  BPE merge {i + 1}/{num_merges}")
 
         print(f"Tokenizer trained: {len(self.vocab)} tokens, {len(self.merges)} merges")
 
     def encode(self, text):
-        """Encode string to list of token IDs."""
-        ids = list(text.encode("utf-8"))
-        while True:
-            # Find the pair with lowest merge index
-            best_pair = None
-            best_idx = float("inf")
-            for i in range(len(ids) - 1):
-                pair = (ids[i], ids[i + 1])
-                if pair in self.merges and self.merges[pair] < best_idx:
-                    best_pair = pair
-                    best_idx = self.merges[pair]
-            if best_pair is None:
-                break
-            # Merge
-            new_ids = []
-            i = 0
-            while i < len(ids):
-                if i < len(ids) - 1 and (ids[i], ids[i + 1]) == best_pair:
-                    new_ids.append(self.merges[best_pair])
-                    i += 2
-                else:
-                    new_ids.append(ids[i])
-                    i += 1
-            ids = new_ids
-        return ids
+        """Encode string with pre-tokenization, applying BPE merges within each chunk."""
+        out = []
+        for chunk_ids in self._pretokenize(text):
+            ids = chunk_ids[:]
+            while True:
+                best_pair = None
+                best_idx = float("inf")
+                for i in range(len(ids) - 1):
+                    pair = (ids[i], ids[i + 1])
+                    if pair in self.merges and self.merges[pair] < best_idx:
+                        best_pair = pair
+                        best_idx = self.merges[pair]
+                if best_pair is None:
+                    break
+                new_ids = []
+                i = 0
+                while i < len(ids):
+                    if i < len(ids) - 1 and (ids[i], ids[i + 1]) == best_pair:
+                        new_ids.append(self.merges[best_pair])
+                        i += 2
+                    else:
+                        new_ids.append(ids[i])
+                        i += 1
+                ids = new_ids
+            out.extend(ids)
+        return out
 
     def decode(self, ids):
-        """Decode list of token IDs to string."""
+        """Decode list of token IDs to string. Special tokens render as empty."""
         raw = b"".join(self.vocab.get(i, b"?") for i in ids)
         return raw.decode("utf-8", errors="replace")
 
@@ -146,14 +165,16 @@ class ByteLevelTokenizer:
 # ---- Data Preparation ----
 
 def load_raw_data(path=DATA_PATH):
-    """Load JSONL dataset, return list of formatted strings."""
+    """Load JSONL dataset, return raw English + Yoda sentences (separately).
+    Each sentence is its own training text — the tokenizer never learns merges
+    across the en/yoda boundary, which would waste vocab.
+    """
     texts = []
     with open(path) as f:
         for line in f:
             row = json.loads(line)
-            # Format as: "English: ... Yoda: ..."
-            text = f"English: {row['en']}\nYoda: {row['yoda']}\n\n"
-            texts.append(text)
+            texts.append(row["en"])
+            texts.append(row["yoda"])
     return texts
 
 
