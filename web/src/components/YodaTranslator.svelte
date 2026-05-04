@@ -314,7 +314,7 @@
 
 <style>
   .translator {
-    max-width: 640px;
+    max-width: 840px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;

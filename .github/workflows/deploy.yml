@@ -55,5 +55,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy web/dist --project-name=yoda-translator-1ml
+          command: pages deploy web/dist --project-name=yoda-translator
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

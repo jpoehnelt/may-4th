@@ -170,7 +170,7 @@ a:hover {
 /* Translator card */
 .translator-card {
   width: 100%;
-  max-width: 700px;
+  max-width: 900px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 20px;
