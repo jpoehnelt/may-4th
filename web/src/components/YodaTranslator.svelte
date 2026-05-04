@@ -681,4 +681,21 @@
     box-shadow: 0 0 6px currentColor;
     border-width: 1.5px;
   }
+
+  /* Responsive Layout */
+  @media (max-width: 600px) {
+    .input-wrapper {
+      flex-wrap: wrap;
+    }
+    textarea {
+      flex: 1 1 100%;
+      min-height: 100px;
+    }
+    .translate-btn {
+      flex: 1;
+    }
+    .clear-btn {
+      min-height: 44px;
+    }
+  }
 </style>
