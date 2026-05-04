@@ -167,6 +167,46 @@ a:hover {
   border-radius: 4px;
 }
 
+/* QR Code Display */
+.qr-container {
+  position: absolute;
+  top: 2rem;
+  right: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 50;
+}
+
+.qr-card {
+  background: white;
+  padding: 0.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(74, 222, 128, 0.2);
+}
+
+.qr-card img {
+  width: 120px;
+  height: 120px;
+  display: block;
+}
+
+.qr-label {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1024px) {
+  .qr-container {
+    display: none;
+  }
+}
+
 /* Translator card */
 .translator-card {
   width: 100%;

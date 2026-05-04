@@ -39,11 +39,11 @@ const paramsText = modelMeta.params >= 1000000
   </head>
   <body>
     <main class="page" id="main">
-      <div class="qr-container" style="position: absolute; top: 2rem; right: 3rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; z-index: 50;">
-        <div style="background: white; padding: 0.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(74, 222, 128, 0.2);">
-          <img src="/qrcode.svg" alt="Scan to try it" style="width: 120px; height: 120px; display: block;" />
+      <div class="qr-container">
+        <div class="qr-card">
+          <img src="/qrcode.svg" alt="Scan to try it" />
         </div>
-        <p style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">yoda.jpoehnelt.dev</p>
+        <p class="qr-label">yoda.jpoehnelt.dev</p>
       </div>
 
       <div class="hero">
