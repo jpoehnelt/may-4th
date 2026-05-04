@@ -53,3 +53,4 @@
 {"exp": 49, "hypothesis": "Modest FFN bump may help: D_FF_MULT 2 -> 3 (between underfit-prone 2 and full 4).", "val_bpb": 0.4783, "result": "REGRESSED", "changes": "D_FF_MULT 2 -> 3. 587K params, 19506 steps. Wider FFN didn't help in budget. Reverted."}
 {"exp": 50, "hypothesis": "Small model may underfit at DROPOUT=0.2; lower to 0.15.", "val_bpb": 0.4740, "result": "REGRESSED", "changes": "DROPOUT 0.2 -> 0.15. 17706 steps. Val regressed — small model also wants DROPOUT=0.2. Reverted."}
 {"exp": 51, "hypothesis": "Lower LR (7e-4 -> 5e-4) for finer convergence at small config.", "val_bpb": 0.5054, "result": "REGRESSED", "changes": "LEARNING_RATE 7e-4 -> 5e-4. 19434 steps. Underfit. LR=7e-4 is sweet spot. Reverted."}
+{"exp": 52, "hypothesis": "Larger batches yield cleaner gradients; DEVICE_BATCH 32 -> 64.", "val_bpb": 0.4332, "result": "REGRESSED", "changes": "DEVICE_BATCH_SIZE 32 -> 64. 19142 steps. Marginal regression (0.4316 -> 0.4332). Reverted."}
