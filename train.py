@@ -18,7 +18,7 @@ from prepare import (
 )
 
 # ---- Hyperparameters (agent tunes these) ----
-DEPTH = 4                    # Number of transformer blocks
+DEPTH = 5                    # Number of transformer blocks
 D_MODEL = 128                # Model dimension
 N_HEADS = 4                  # Number of attention heads
 D_FF_MULT = 4                # FFN expansion factor
