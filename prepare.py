@@ -16,7 +16,7 @@ import torch
 MAX_SEQ_LEN = 256          # Yoda sentences are short
 VOCAB_SIZE = 2048           # Small vocab for tiny model
 EVAL_TOKENS = 50_000        # Keep eval fast
-TRAIN_BUDGET_SEC = 180       # 3 min per experiment (demo cadence)
+TRAIN_BUDGET_SEC = 600       # 10 min per experiment
 DATA_PATH = "data/yoda_osv.jsonl"
 TOKENIZER_PATH = "data/tokenizer.json"
 TRAIN_BIN = "data/train.bin"
