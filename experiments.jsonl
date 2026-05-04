@@ -24,3 +24,4 @@
 {"exp": 23, "hypothesis": "1800s budget gave 6x more steps to memorize; restore strong regularization with DROPOUT 0.2.", "val_bpb": 3.4927, "result": "IMPROVED", "changes": "DROPOUT 0.05 -> 0.2 (paired with 1800s budget)"}
 {"exp": 24, "hypothesis": "With 1800s budget and DROPOUT=0.2, wider D_MODEL=192 should now converge.", "val_bpb": 5.0864, "result": "REGRESSED", "changes": "D_MODEL 128 -> 192, N_HEADS 4 -> 6. Train loss 0.22 — wider model memorized despite dropout."}
 {"exp": 25, "hypothesis": "exp-023 train loss 0.72 still showed overfit room; pushing DROPOUT further should improve.", "val_bpb": 2.9034, "result": "IMPROVED", "changes": "DROPOUT 0.2 -> 0.3"}
+{"exp": "REGIME_CHANGE", "note": "TRAIN_BUDGET_SEC 1800 -> 3600 (60 min, user-directed). Doubled compute increases memorization risk further; warm-starting from exp-025 best (DROPOUT=0.3, WD=0.05, LR=1e-3, D_MODEL=128, DEPTH=4, val_bpb=2.9034 at 1800s)."}
