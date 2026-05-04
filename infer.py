@@ -57,41 +57,58 @@ def load_model(checkpoint_path):
 
 
 @torch.no_grad()
-def generate_tokens(model, tokenizer, prompt, max_tokens=80, temperature=0.8, top_k=40):
-    """Yield (token_string, token_count, elapsed) tuples.
-    Stops at the first newline to produce single-sentence output.
+def generate_tokens(model, tokenizer, src_text, max_tokens=80, temperature=0.0, top_k=0, copy_bias=1.5):
+    """Encoder-decoder generation. src_text is the English input (no wrapping).
+    Yields (token_string, token_count, elapsed) tuples.
+    Stops at EOS (newline) or max_tokens.
+
+    temperature=0 enables greedy decoding (recommended for translation).
+    copy_bias adds a logit bonus to tokens present in the source (encourages copying).
     """
-    ids = tokenizer.encode(prompt)
-    ids = ids[-(MAX_SEQ_LEN - 1):]
-    x = torch.tensor([ids], dtype=torch.long, device=DEVICE)
+    eos_ids = tokenizer.encode("\n")
+    eos_id = eos_ids[-1] if eos_ids else 10
+
+    src_ids = tokenizer.encode(src_text) + [eos_id]
+    src_ids = src_ids[:64]  # MAX_SRC_LEN
+    src = torch.tensor([src_ids], dtype=torch.long, device=DEVICE)
+    src_pad_mask = (src == 0)
+
+    enc_out = model.encode(src, src_pad_mask)
+
+    bias_tokens = None
+    if copy_bias > 0:
+        bias_tokens = torch.unique(src).long()
+
+    # Start decoder from BOS = PAD = 0
+    tgt = torch.tensor([[0]], dtype=torch.long, device=DEVICE)
 
     start = time.time()
     for i in range(max_tokens):
-        logits = model(x)
-        logits = logits[:, -1, :] / temperature
+        logits = model.decode(tgt, enc_out, src_pad_mask)
+        last = logits[:, -1, :].clone()
 
-        if top_k > 0:
-            v, _ = torch.topk(logits, top_k)
-            logits[logits < v[:, [-1]]] = -float("inf")
+        if copy_bias > 0 and bias_tokens is not None:
+            last[:, bias_tokens] = last[:, bias_tokens] + copy_bias
 
-        probs = torch.softmax(logits, dim=-1)
-        next_id = torch.multinomial(probs, num_samples=1)
-        token_str = tokenizer.decode([next_id.item()])
+        if temperature <= 0:
+            next_id = torch.argmax(last, dim=-1, keepdim=True)
+        else:
+            scaled = last / temperature
+            if top_k > 0:
+                v, _ = torch.topk(scaled, top_k)
+                scaled[scaled < v[:, [-1]]] = -float("inf")
+            probs = torch.softmax(scaled, dim=-1)
+            next_id = torch.multinomial(probs, num_samples=1)
 
-        # Stop at sentence boundary (newline = end of example in training data)
-        if "\n" in token_str:
-            token_str = token_str.split("\n")[0]
-            if token_str:
-                elapsed = time.time() - start
-                yield token_str, i + 1, elapsed
+        token_id = int(next_id.item())
+        if token_id == eos_id:
             break
 
+        token_str = tokenizer.decode([token_id])
         elapsed = time.time() - start
         yield token_str, i + 1, elapsed
 
-        x = torch.cat([x, next_id], dim=1)
-        if x.size(1) > MAX_SEQ_LEN:
-            x = x[:, -MAX_SEQ_LEN:]
+        tgt = torch.cat([tgt, next_id], dim=1)
 
 
 def render_header(val_bpb, n_params, step):
@@ -135,8 +152,8 @@ def run_interactive(model, tokenizer, val_bpb, step, n_params, args):
 
         console.print()
 
-        # Wrap in training format so the model sees the pattern it learned
-        model_prompt = f"English: {user_input}\nYoda: "
+        # Encoder-decoder: source is the English input as-is (no template wrapping)
+        model_prompt = user_input
 
         # Stream output with live display
         output_parts = []
@@ -148,6 +165,7 @@ def run_interactive(model, tokenizer, val_bpb, step, n_params, args):
                 model, tokenizer, model_prompt,
                 max_tokens=args.max_tokens,
                 temperature=args.temperature,
+                copy_bias=args.copy_bias,
             ):
                 output_parts.append(token_str)
                 final_tokens = count
@@ -197,11 +215,11 @@ def run_interactive(model, tokenizer, val_bpb, step, n_params, args):
 
 def run_single(model, tokenizer, prompt, args):
     """Single-shot generation for piping / scripting."""
-    model_prompt = f"English: {prompt}\nYoda: "
     for token_str, _, _ in generate_tokens(
-        model, tokenizer, model_prompt,
+        model, tokenizer, prompt,
         max_tokens=args.max_tokens,
         temperature=args.temperature,
+        copy_bias=args.copy_bias,
     ):
         sys.stdout.write(token_str)
         sys.stdout.flush()
@@ -213,7 +231,8 @@ def main():
     parser.add_argument("--checkpoint", default="checkpoints/best.pt")
     parser.add_argument("--prompt", default=None, help="Single-shot prompt (skips interactive)")
     parser.add_argument("--max-tokens", type=int, default=80)
-    parser.add_argument("--temperature", type=float, default=0.8)
+    parser.add_argument("--temperature", type=float, default=0.0, help="0 = greedy (recommended for translation)")
+    parser.add_argument("--copy-bias", type=float, default=1.5, help="logit bonus for tokens in the source")
     args = parser.parse_args()
 
     console.print(f"\n[dim]Loading model from {args.checkpoint}...[/dim]")
