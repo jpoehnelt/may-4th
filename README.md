@@ -1,8 +1,8 @@
-# Kaminoan — Browser-Based Yoda Translator
+# Browser-Based Yoda Translator
 
 > May the force be with your validation loss.
 
-**[Live Demo: yoda-translator-1ml.pages.dev](https://yoda-translator-1ml.pages.dev)**
+**[Live Demo: yoda.jpoehnelt.dev](https://yoda.jpoehnelt.dev)**
 
 Kaminoan is an autonomous ML research project that trains a tiny 525K parameter encoder-decoder transformer to translate English to Yoda's Object-Subject-Verb (OSV) syntax. The resulting model is exported to ONNX and runs entirely client-side in the browser using a Svelte & Astro frontend.
 
@@ -19,7 +19,7 @@ Kaminoan is an autonomous ML research project that trains a tiny 525K parameter 
 
 ## 🧠 Part 1: Autonomous ML Research Loop
 
-An AI agent reads `program.md`, modifies `train.py`, runs a training experiment, and commits or reverts based on whether the validation bits-per-byte (`val_bpb`) improved. 
+An AI agent reads `program.md`, modifies `train.py`, runs a training experiment, and commits or reverts based on whether the validation bits-per-byte (`val_bpb`) improved.
 
 ```
 program.md  →  Agent reads instructions
@@ -31,9 +31,11 @@ infer.py    →  TUI inference after training
 ### Running the Agent Loop
 
 Point your coding agent at this repo and say:
+
 > Have a look at program.md and let's kick off a new experiment.
 
 The agent will autonomously:
+
 1. Read `program.md` for instructions.
 2. Modify `train.py` (architecture, hyperparams, optimizer).
 3. Run training (e.g. 5-min budget).
@@ -47,9 +49,11 @@ The agent will autonomously:
 To make the model usable by anyone without a backend GPU, we export the PyTorch model to ONNX with embedded weights.
 
 ### Exporting the Model
+
 ```bash
 uv run python export_onnx.py
 ```
+
 This generates `encoder.onnx` and `decoder.onnx` into `web/public/models/`. Because the models are extremely small (~11MB combined), they are tracked directly in Git to avoid long CI build times.
 
 ### Running the Web Frontend Locally
@@ -64,9 +68,10 @@ pnpm run dev
 
 ### Deployment
 
-The application is automatically built and deployed to Cloudflare Pages via GitHub Actions on every push to the `main` branch. 
+The application is automatically built and deployed to Cloudflare Pages via GitHub Actions on every push to the `main` branch.
 
 To deploy manually via the Wrangler CLI:
+
 ```bash
 cd web
 pnpm run build
@@ -77,12 +82,12 @@ pnpm exec wrangler pages deploy dist --project-name yoda-translator-1ml
 
 ## 📂 Project Structure
 
-| Directory/File       | Purpose                                 |
-| ------------------ | --------------------------------------- |
-| `prepare.py`       | Data loading, BPE tokenizer, evaluation |
-| `train.py`         | Model architecture & training loop      |
-| `export_onnx.py`   | Traces and exports PyTorch to ONNX      |
-| `infer.py`         | Terminal inference UI (rich)            |
-| `web/`             | Astro/Svelte frontend application       |
-| `web/public/models`| Embedded `.onnx` files and `tokenizer.json` |
-| `.github/workflows`| Cloudflare Pages deployment CI          |
+| Directory/File      | Purpose                                     |
+| ------------------- | ------------------------------------------- |
+| `prepare.py`        | Data loading, BPE tokenizer, evaluation     |
+| `train.py`          | Model architecture & training loop          |
+| `export_onnx.py`    | Traces and exports PyTorch to ONNX          |
+| `infer.py`          | Terminal inference UI (rich)                |
+| `web/`              | Astro/Svelte frontend application           |
+| `web/public/models` | Embedded `.onnx` files and `tokenizer.json` |
+| `.github/workflows` | Cloudflare Pages deployment CI              |
