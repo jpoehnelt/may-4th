@@ -4,7 +4,7 @@
 
 **[Live Demo: yoda.jpoehnelt.dev](https://yoda.jpoehnelt.dev)**
 
-Kaminoan is an autonomous ML research project that trains a tiny 525K parameter encoder-decoder transformer to translate English to Yoda's Object-Subject-Verb (OSV) syntax. The resulting model is exported to ONNX and runs entirely client-side in the browser using a Svelte & Astro frontend.
+An autonomous ML research project that trains a tiny 525K parameter encoder-decoder transformer to translate English to Yoda's Object-Subject-Verb (OSV) syntax. The resulting model is exported to ONNX and runs entirely client-side in the browser using a Svelte & Astro frontend.
 
 ## 🚀 Architecture & Stack
 
